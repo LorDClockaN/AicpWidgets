@@ -37,30 +37,6 @@
         android:background="?android:attr/selectableItemBackground" >
 
 
-        <!-- <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/reboot_phone"
-            android:id="@+id/btn_reb" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/reboot_recovery"
-            android:id="@+id/btn_rec" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/restart_systemui"
-            android:id="@+id/SysUi" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/shutdown_phone"
-            android:id="@+id/shut" /> -->
-
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
