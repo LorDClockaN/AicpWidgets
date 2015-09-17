@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">AicpWidgets</string>
+    <string name="action_settings">Settings</string>
+    <string name="reboot_phone">Reboot phone</string>
+    <string name="reboot_recovery">Reboot recovery</string>
+    <string name="restart_systemui">Restart SystemUI</string>
+    <string name="shutdown_phone">Shutdown phone</string>
+    <string name="aicp_widgets">AICP widgets</string>
+    <string name="selinux_switch_title">Selinux switch</string>
+    <string name="selinux_switch">Selinux switch</string>
+    <string name="selinux_switch_on">Selinux enforcing</string>
+    <string name="selinux_switch_off">Selinux permissive</string>
+</resources>
