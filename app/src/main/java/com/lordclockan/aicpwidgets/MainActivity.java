@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
     public boolean suAvailable = false;
     SharedPreferences mSettings;
     Editor toEdit;
-    public boolean selinuxPref;
+    private String selinuxPref;
 
     Switch selinux;
     TextView selinuxSummary;
@@ -29,14 +29,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        mSettings = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         suAvailable = Shell.SU.available();
 
         selinux = (Switch) findViewById(R.id.swSelinux);
         selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
 
-       // selinuxEnforcingState = Shell.SU.isSELinuxEnforcing();
-        if (isEnforcingPref()) {
+        selinuxEnforcingState = Shell.SU.isSELinuxEnforcing();
+        if (selinuxEnforcingState) {
             selinux.setChecked(true);
             selinuxSummary.setText(getString(R.string.selinux_switch_on));
         } else {
@@ -49,12 +48,12 @@ public class MainActivity extends Activity {
                 if (isChecked) {
                     (new StartUp()).setContext(buttonView.getContext()).execute("selinuxOn");
                     selinuxSummary.setText(getString(R.string.selinux_switch_on));
-                    selinuxPref = true;
+                    selinuxPref = "true";
                     sharedPrefernces();
                 } else {
                     (new StartUp()).setContext(buttonView.getContext()).execute("selinuxOff");
                     selinuxSummary.setText(getString(R.string.selinux_switch_off));
-                    selinuxPref = false;
+                    selinuxPref = "false";
                     sharedPrefernces();
                 }
             }
@@ -63,9 +62,9 @@ public class MainActivity extends Activity {
     }
 
     public void sharedPrefernces() {
-        mSettings = getSharedPreferences("Selinux switch state", MODE_PRIVATE);
+        mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
         toEdit = mSettings.edit();
-        toEdit.putBoolean("selinux", selinuxPref);
+        toEdit.putString("selinux", selinuxPref);
         toEdit.commit();
     }
 
@@ -81,8 +80,12 @@ public class MainActivity extends Activity {
         protected Void doInBackground(String... params) {
             if (suAvailable) {
                 switch (params[0]){
-                    case "selinuxOn" : Shell.SU.run("setenforce 1");break;
-                    case "selinuxOff" : Shell.SU.run("setenforce 0");break;
+                    case "selinuxOn":
+                        Shell.SU.run("setenforce 1");
+                        break;
+                    case "selinuxOff":
+                        Shell.SU.run("setenforce 0");
+                        break;
                 }
             }
             else{
@@ -93,13 +96,4 @@ public class MainActivity extends Activity {
         }
 
     }
-
-    public boolean isEnforcingPref(){
-        boolean state = false;
-        if (mSettings.getBoolean("selinux", true)){
-            state = true;
-        }
-        return state;
-    }
-
 }
