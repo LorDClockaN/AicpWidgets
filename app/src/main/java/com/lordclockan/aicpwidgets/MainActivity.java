@@ -34,6 +34,8 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         // suAvailable = Shell.SU.available();
+
+        selinuxSetOnBoot = (CheckBox) findViewById(R.id.chkSelinuxOnBoot);
         if (selinuxOnBootPref == 1) {
             selinuxSetOnBoot.setChecked(true);
         } else if (selinuxOnBootPref == 0) {
@@ -104,7 +106,6 @@ public class MainActivity extends Activity {
     }
 
     public void addListenerOnChkBoot() {
-        selinuxSetOnBoot = (CheckBox) findViewById(R.id.chkSelinuxOnBoot);
         selinuxSetOnBoot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
