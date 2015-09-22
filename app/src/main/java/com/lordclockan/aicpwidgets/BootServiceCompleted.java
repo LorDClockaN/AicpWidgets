@@ -11,6 +11,10 @@ import eu.chainfire.libsuperuser.Shell;
 
 public class BootServiceCompleted extends Service {
 
+    private boolean isRunning;
+    private Context context;
+    private Thread backgroundThread;
+
     SharedPreferences mSettings;
     private String selinuxValuePref;
     private int selinuxOnBootPref;
@@ -22,20 +26,43 @@ public class BootServiceCompleted extends Service {
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        this.context = this;
+        this.isRunning = false;
+        this.backgroundThread = new Thread(myBoot);
+    }
 
-        mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
-        selinuxValuePref = mSettings.getString("selinux", "");
-        selinuxOnBootPref = mSettings.getInt("onBoot", -1);
-
-        if (selinuxOnBootPref == 1) {
-            if (selinuxValuePref.equals("true")) {
-                Shell.SU.run("setenforce 1");
-                Toast.makeText(this, "Selinux Enforcing", Toast.LENGTH_LONG).show();
-            } else if (selinuxValuePref.equals("false")) {
-                Shell.SU.run("setenforce 0");
-                Toast.makeText(this, "Selinux Permissive", Toast.LENGTH_LONG).show();
+    private Runnable myBoot = new Runnable() {
+        @Override
+        public void run() {
+            mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
+            selinuxValuePref = mSettings.getString("selinux", "");
+            selinuxOnBootPref = mSettings.getInt("onBoot", -1);
+            if (selinuxOnBootPref == 1) {
+                if (selinuxValuePref.equals("true")) {
+                    Shell.SU.run("setenforce 1");
+                    System.out.println("SERVICE IS RUNNING AND ENFORCING");
+                    // Toast.makeText(this, "Selinux Enforcing", Toast.LENGTH_LONG).show();
+                } else if (selinuxValuePref.equals("false")) {
+                    Shell.SU.run("setenforce 0");
+                    System.out.println("SERVICE IS RUNNING AND ENFORCING");
+                    // Toast.makeText(this, "Selinux Permissive", Toast.LENGTH_LONG).show();
+                }
             }
+            stopSelf();
         }
+    };
+
+    @Override
+    public void onDestroy() {
+        this.isRunning = false;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(!this.isRunning) {
+            this.isRunning = true;
+            this.backgroundThread.start();
+        }
+        return START_STICKY;
     }
 }
