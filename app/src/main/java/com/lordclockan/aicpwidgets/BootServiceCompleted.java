@@ -12,7 +12,6 @@ import eu.chainfire.libsuperuser.Shell;
 public class BootServiceCompleted extends Service {
 
     SharedPreferences mSettings;
-    private boolean suAvailable;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,7 +23,6 @@ public class BootServiceCompleted extends Service {
         super.onCreate();
 
         mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
-        suAvailable = Shell.SU.available();
         String value = mSettings.getString("selinux", "");
         if (value.equals("true")) {
             Shell.SU.run("setenforce 1");

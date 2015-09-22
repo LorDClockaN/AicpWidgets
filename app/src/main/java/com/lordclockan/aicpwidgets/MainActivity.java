@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import eu.chainfire.libsuperuser.Shell;
 
 public class MainActivity extends Activity {
 
-    public boolean suAvailable = false;
+    // public boolean suAvailable = false;
     SharedPreferences mSettings;
     Editor toEdit;
     private String selinuxPref;
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        suAvailable = Shell.SU.available();
+        // suAvailable = Shell.SU.available();
 
         selinux = (Switch) findViewById(R.id.swSelinux);
         selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
         toEdit = mSettings.edit();
         toEdit.putString("selinux", selinuxPref);
-        toEdit.commit();
+        toEdit.apply();
     }
 
     private class StartUp extends AsyncTask<String,Void,Void> {
@@ -78,18 +78,13 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(String... params) {
-            if (suAvailable) {
-                switch (params[0]){
-                    case "selinuxOn":
-                        Shell.SU.run("setenforce 1");
-                        break;
-                    case "selinuxOff":
-                        Shell.SU.run("setenforce 0");
-                        break;
-                }
-            }
-            else{
-                Toast.makeText(getApplicationContext(),"Phone not Rooted",Toast.LENGTH_SHORT).show();
+            switch (params[0]){
+                case "selinuxOn":
+                    Shell.SU.run("setenforce 1");
+                    break;
+                case "selinuxOff":
+                    Shell.SU.run("setenforce 0");
+                    break;
             }
 
             return null;
