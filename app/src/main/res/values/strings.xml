@@ -10,4 +10,5 @@
     <string name="selinux_switch">Selinux switch</string>
     <string name="selinux_switch_on">Selinux enforcing</string>
     <string name="selinux_switch_off">Selinux permissive</string>
+    <string name="selinux_onboot">Set on boot</string>
 </resources>

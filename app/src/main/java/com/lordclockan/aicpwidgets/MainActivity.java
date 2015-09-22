@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -18,9 +20,11 @@ public class MainActivity extends Activity {
     SharedPreferences mSettings;
     Editor toEdit;
     private String selinuxPref;
+    private int selinuxOnBootPref;
 
     Switch selinux;
     TextView selinuxSummary;
+    CheckBox selinuxSetOnBoot;
 
     public boolean selinuxEnforcingState;
 
@@ -30,6 +34,8 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         // suAvailable = Shell.SU.available();
+
+        addListenerOnChkBoot();
 
         selinux = (Switch) findViewById(R.id.swSelinux);
         selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
@@ -65,6 +71,7 @@ public class MainActivity extends Activity {
         mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
         toEdit = mSettings.edit();
         toEdit.putString("selinux", selinuxPref);
+        toEdit.putInt("onBoot", selinuxOnBootPref);
         toEdit.apply();
     }
 
@@ -89,6 +96,23 @@ public class MainActivity extends Activity {
 
             return null;
         }
+
+    }
+
+    public void addListenerOnChkBoot() {
+        selinuxSetOnBoot = (CheckBox) findViewById(R.id.chkSelinuxOnBoot);
+        selinuxSetOnBoot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    selinuxOnBootPref = 1;
+                    sharedPrefernces();
+                } else if (!((CheckBox) v).isChecked()) {
+                    selinuxOnBootPref = 0;
+                    sharedPrefernces();
+                }
+            }
+        });
 
     }
 }
