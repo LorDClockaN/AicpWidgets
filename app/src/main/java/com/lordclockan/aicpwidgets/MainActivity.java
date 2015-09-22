@@ -34,7 +34,11 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         // suAvailable = Shell.SU.available();
-
+        if (selinuxOnBootPref == 1) {
+            selinuxSetOnBoot.setChecked(true);
+        } else if (selinuxOnBootPref == 0) {
+            selinuxSetOnBoot.setChecked(false);
+        }
         addListenerOnChkBoot();
 
         selinux = (Switch) findViewById(R.id.swSelinux);
