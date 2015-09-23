@@ -16,10 +16,11 @@ public class BootServiceCompleted extends Service {
     private boolean isRunning;
     private Context context;
     private Thread backgroundThread;
+    private Looper myLooper;
 
     SharedPreferences mSettings;
     private String selinuxValuePref;
-    private int selinuxOnBootPref;
+    private String selinuxOnBootPref;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -38,8 +39,8 @@ public class BootServiceCompleted extends Service {
         public void run() {
             mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
             selinuxValuePref = mSettings.getString("selinux", "");
-            selinuxOnBootPref = mSettings.getInt("onBoot", -1);
-            if (selinuxOnBootPref == 1) {
+            selinuxOnBootPref = mSettings.getString("onBoot", "");
+            if (selinuxOnBootPref.equals("true")) {
                 if (selinuxValuePref.equals("true")) {
                     Shell.SU.run("setenforce 1");
                     // System.out.println("SERVICE IS RUNNING AND ENFORCING");
@@ -78,8 +79,11 @@ public class BootServiceCompleted extends Service {
 
             @Override
             public boolean queueIdle() {
+                myLooper = Looper.myLooper();
                 if (++mReqCount == 2) {
-                    Looper.myLooper().quit();
+                    if (myLooper != null) {
+                        myLooper.quit();
+                    }
                     return false;
                 } else
                     return true;

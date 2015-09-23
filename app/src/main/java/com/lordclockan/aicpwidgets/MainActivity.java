@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
     SharedPreferences mSettings;
     Editor toEdit;
     private String selinuxPref;
-    private int selinuxOnBootPref;
+    private String selinuxOnBootPref;
 
     Switch selinux;
     TextView selinuxSummary;
@@ -44,12 +44,8 @@ public class MainActivity extends Activity {
         selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
         selinuxSetOnBoot = (CheckBox) findViewById(R.id.chkSelinuxOnBoot);
 
-        selinuxOnBootPref = mSettings.getInt("onBoot", -1);
-        if (selinuxOnBootPref == 1) {
-            selinuxSetOnBoot.setChecked(true);
-        } else if (selinuxOnBootPref == 0) {
-            selinuxSetOnBoot.setChecked(false);
-        }
+        mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
+        selinuxOnBootPref = mSettings.getString("onBoot", "");
 
         selinuxEnforcingState = Shell.SU.isSELinuxEnforcing();
         if (selinuxEnforcingState) {
@@ -76,6 +72,7 @@ public class MainActivity extends Activity {
             }
         });
 
+        updateSetOnBootCheckBox();
         addListenerOnChkBoot();
 
         this.context = this;
@@ -90,17 +87,16 @@ public class MainActivity extends Activity {
     }
 
     public void sharedPrefernces() {
-        mSettings = getSharedPreferences("Selinux switch state", Context.MODE_PRIVATE);
         toEdit = mSettings.edit();
         toEdit.putString("selinux", selinuxPref);
-        toEdit.putInt("onBoot", selinuxOnBootPref);
+        toEdit.putString("onBoot", selinuxOnBootPref);
         toEdit.apply();
     }
 
     private class StartUp extends AsyncTask<String,Void,Void> {
 
         private Context context = null;
-                public StartUp setContext(Context context) {
+        public StartUp setContext(Context context) {
             this.context = context;
             return this;
         }
@@ -125,15 +121,25 @@ public class MainActivity extends Activity {
         selinuxSetOnBoot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) {
-                    selinuxOnBootPref = 1;
+                if (selinuxSetOnBoot.isChecked()) {
+                    selinuxOnBootPref = "true";
                     sharedPrefernces();
-                } else if (!((CheckBox) v).isChecked()) {
-                    selinuxOnBootPref = 0;
+                    updateSetOnBootCheckBox();
+                } else {
+                    selinuxOnBootPref = "false";
                     sharedPrefernces();
+                    updateSetOnBootCheckBox();
                 }
             }
         });
 
+    }
+
+    private void updateSetOnBootCheckBox() {
+        if (selinuxOnBootPref.equals("true")) {
+            selinuxSetOnBoot.setChecked(true);
+        } else if (selinuxOnBootPref.equals("false")) {
+            selinuxSetOnBoot.setChecked(false);
+        }
     }
 }
