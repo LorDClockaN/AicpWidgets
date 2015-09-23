@@ -40,16 +40,16 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         // suAvailable = Shell.SU.available();
 
+        selinux = (Switch) findViewById(R.id.swSelinux);
+        selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
         selinuxSetOnBoot = (CheckBox) findViewById(R.id.chkSelinuxOnBoot);
+
+        selinuxOnBootPref = mSettings.getInt("onBoot", -1);
         if (selinuxOnBootPref == 1) {
             selinuxSetOnBoot.setChecked(true);
         } else if (selinuxOnBootPref == 0) {
             selinuxSetOnBoot.setChecked(false);
         }
-        addListenerOnChkBoot();
-
-        selinux = (Switch) findViewById(R.id.swSelinux);
-        selinuxSummary = (TextView) findViewById(R.id.tvSelinuxSummary);
 
         selinuxEnforcingState = Shell.SU.isSELinuxEnforcing();
         if (selinuxEnforcingState) {
@@ -75,6 +75,8 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        addListenerOnChkBoot();
 
         this.context = this;
         Intent alarm = new Intent(this.context, BootCompletedIntentReceiver.class);
